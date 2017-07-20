@@ -2,30 +2,44 @@
 
 Micro service made easy!
 
+## Introduction
+
+Node.js micro service toolkit.
+
 ## Status
 
 Under active development.
 
 ## Goals
 
-- transparent transport
 - easy to use
-  - high level abstraction
-  - modern api
-  - zero config
-- extensible
-  - plugin - provide abilities
-  - middleware - provide controls
-- eco-system
-  - transporter
-  - api gateway
+  - :white_check_mark: high level abstraction
+  - :white_check_mark: modern api
+  - :white_check_mark: flexibility via composition
+- message models
+  - :white_check_mark: one to one request-response
+  - :white_check_mark: one to instances notification
+  - :white_check_mark: one to groups notification
+- brokers
+  - :white_check_mark: nats
+  - amqp
+  - redis
+  - tcp
+  - http
+- HOHs (high order handlers)
+  - validation 
   - logger
-  - error handling
-  - monitor
-- message model
-  - one to one req-res
-  - one to many via topic
-  - one to group via topic
+  - error handler
+  - authentication
+  - cache
+- api gateways
+  - http
+  - tcp
+- monitor
+
+## TODO
+
+- use lerna
 
 ## Tech List
 
