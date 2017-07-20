@@ -14,4 +14,20 @@ describe('NATSTransporterPlugin', function () {
     await expect(ps.start()).resolves.toBe()
     await expect(ps.stop()).resolves.toBe()
   })
+
+  test('simple request', async () => {
+    const plugin = new NATSTransporterPlugin()
+
+    await plugin.start()
+
+    plugin.handleRequest({topic: 'test.request'}, async (input) => {
+      return input + input
+    })
+
+    const result = await plugin.request({topic: 'test.request', input: 'a'})
+
+    await plugin.stop()
+
+    expect(result).toBe('aa')
+  })
 })
