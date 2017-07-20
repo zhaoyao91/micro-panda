@@ -16,6 +16,9 @@ Under active development.
   - :white_check_mark: one to one request-response
   - :white_check_mark: one to instances notification
   - :white_check_mark: one to groups notification
+- error handling
+  - :white_check_mark: via broker error handler
+  - :white_check_mark: via hoh
 - brokers
   - :white_check_mark: memory
   - :white_check_mark: nats
@@ -28,20 +31,27 @@ Under active development.
 - HOBs (high order brokers)
   - :white_check_mark: withSerializer
 - HOHs (high order handlers)
-  - validation
-  - logger
-  - error handler
+  - auto logging
   - authentication
   - cache
+- validations
+  - Joi
+- loggers
+  - pino
 - api gateways
   - http
   - tcp
-- monitor
+- monitors
+- testing
+  - jest
+
 
 ## TODO
 
 - use lerna
 - docs
+  - basic usage
+  - error handling
 
 ## Tech List
 
