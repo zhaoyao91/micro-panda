@@ -10,6 +10,7 @@
   "devDependencies": {
     "jest": "^20.0.4",
     "joi": "^10.6.0",
+    "lerna": "^2.0.0",
     "node-fetch": "^1.7.1",
     "test-listen": "^1.0.2"
   },
