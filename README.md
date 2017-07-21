@@ -60,4 +60,3 @@ Under active development.
 - pino
 - jest
 - Joi
-- super-error

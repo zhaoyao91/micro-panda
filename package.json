@@ -4,7 +4,8 @@
   "main": "index.js",
   "author": "zhaoyao91 <zhaoyao91@163.com>",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
     "jest": "^20.0.4",
