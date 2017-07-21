@@ -28,14 +28,18 @@ Under active development.
   - http
 - serializers
   - :white_check_mark: json
+  - bjson
+  - ejson
 - HOBs (high order brokers)
   - :white_check_mark: withSerializer
+  - :white_check_mark: withProtocol
 - HOHs (high order handlers)
+  - :white_check_mark: withSerializer
   - auto logging
   - authentication
   - cache
 - validations
-  - Joi
+  - :white_check_mark: Joi
 - loggers
   - pino
 - api gateways
@@ -45,10 +49,11 @@ Under active development.
 - testing
   - jest
 
-
 ## TODO
 
 - use lerna
+- build facade
+- simplify previous tests with setup and teardown
 - docs
   - basic usage
   - error handling
