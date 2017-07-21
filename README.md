@@ -43,9 +43,12 @@ Under active development.
 - loggers
   - pino
 - api gateways
-  - http
+  - :white_check_mark: http
   - tcp
 - monitors
+- interactions
+  - repl
+  - web
 - testing
   - jest
 
@@ -54,6 +57,7 @@ Under active development.
 - use lerna
 - build facade
 - simplify previous tests with setup and teardown
+- remove lodash dependencies
 - docs
   - basic usage
   - error handling
