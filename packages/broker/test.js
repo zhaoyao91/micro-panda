@@ -83,4 +83,20 @@ describe('Broker', function () {
       expect(err.message).toBe('internal server error')
     }
   })
+
+  test('basic event', async () => {
+    expect.assertions(4)
+
+    transporter = new Transporter()
+    await transporter.start()
+    broker = new Broker({transporter})
+
+    broker.on('test.event', (input, message) => {
+      expect(input).toEqual({name: 'Bob'})
+      expect(message.protocol).toBeDefined()
+      expect(message.type).toBe('event')
+      expect(message.input).toEqual({name: 'Bob'})
+    })
+    await broker.emit('test.event', {name: 'Bob'})
+  })
 })

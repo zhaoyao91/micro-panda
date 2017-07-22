@@ -69,6 +69,37 @@ module.exports = class Broker {
       else return resMessage.output
     }
   }
+
+  /**
+   * should be called after transporter started
+   * @param name
+   * @param handler - async func(input, message)
+   */
+  on (name, handler) {
+    const transporterHandler = async reqData => {
+      try {
+        const reqMessage = this.serializer.deserialize(reqData)
+        this.protocol.checkEventEnvelope(reqMessage)
+        await handler(reqMessage.input, reqMessage)
+      }
+      catch (err) {
+        await this.errorHandler(err)
+      }
+    }
+    this.transporter.on(name, transporterHandler)
+  }
+
+  /**
+   * should be called after transporter started
+   * @async
+   * @param name
+   * @param input
+   */
+  async emit (name, input) {
+    const reqMessage = this.protocol.buildEventEnvelope({input})
+    const reqData = this.serializer.serialize(reqMessage)
+    await this.transporter.emit(name, reqData)
+  }
 }
 
 function defaultErrorHandler (err) {
