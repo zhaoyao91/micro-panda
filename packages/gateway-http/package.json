@@ -1,0 +1,21 @@
+{
+  "name": "micro-panda-gateway-http",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "author": "zhaoyao91 <zhaoyao91@163.com>",
+  "devDependencies": {
+    "jest": "^20.0.4",
+    "micro-panda-broker": "^0.0.1",
+    "micro-panda-transporter-nats": "^0.0.1",
+    "node-fetch": "^1.7.1",
+    "test-listen": "^1.0.2"
+  },
+  "dependencies": {
+    "error-utils": "^1.0.0",
+    "micro": "^7.3.3"
+  }
+}
