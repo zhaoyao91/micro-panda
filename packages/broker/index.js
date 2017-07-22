@@ -5,18 +5,23 @@ const {makeError, objectToError, errorToObject} = require('error-utils')
 module.exports = class Broker {
   /**
    * @param transporter
-   * @param [serializer] - default EJSON
+   * @param [serializer] - default to EJSON serializer
    * @param [errorHandler] - async func(err) => err
-   * - about the effect of the return value (only for response error):
+   * - the returned error will have some effect on the response
    * - if it returns an error, it will be send to client
-   * - if it returns non-error, an InternalServerError will be send to client
-   * - default behavior is returning the received error
+   * - if it returns non-error, an BrokerError will be send to client
+   * - the default behavior is logging the error and returning the received error
+   * @param [logger] - default to console
    */
-  constructor ({errorHandler, transporter, serializer}) {
-    this.errorHandler = errorHandler || defaultErrorHandler
+  constructor ({errorHandler, transporter, serializer, logger}) {
+    this.errorHandler = errorHandler ? errorHandler : err => {
+      this.logger.error(err)
+      return err
+    }
     this.transporter = transporter
     this.serializer = serializer || new EJSONSerializer()
     this.protocol = new Protocol()
+    this.logger = logger || console
   }
 
   /**
@@ -104,20 +109,16 @@ module.exports = class Broker {
   /**
    * proxy for inner transporter
    */
-  async start(...args) {
+  async start (...args) {
     return await this.transporter.start(...args)
   }
 
   /**
    * proxy for inner transporter
    */
-  async stop(...args) {
+  async stop (...args) {
     return await this.transporter.stop(...args)
   }
-}
-
-function defaultErrorHandler (err) {
-  return err
 }
 
 const BrokerError = makeError('BrokerError')

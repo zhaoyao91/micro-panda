@@ -38,7 +38,7 @@ describe('Broker', function () {
 
     transporter = new Transporter()
     await transporter.start()
-    broker = new Broker({transporter})
+    broker = new Broker({transporter, errorHandler: err => err})
 
     broker.define('test.method', input => {throw new TypeError('test type error')})
     try {
