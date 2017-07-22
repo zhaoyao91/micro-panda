@@ -7,13 +7,12 @@ module.exports = class NATSMessageTransporter {
     // and heavy work should be handled asynchronously
     // so this default timeout should be long enough
     if (!options.hasOwnProperty('timeout')) options.timeout = 5000
-
     this.options = options
     this.errorHandler = defaultErrorHandler
-    this.methods = {}
   }
 
   /**
+   * should be called before started
    * @param errorHandler - async func(err)
    */
   setErrorHandler (errorHandler) {
@@ -21,14 +20,26 @@ module.exports = class NATSMessageTransporter {
   }
 
   /**
+   * should be called after started
    * @param name
    * @param handler - async func(input) => output
    */
   define (name, handler) {
-    if (this.methods[name]) throw new Error(`duplicate method name: ${name}`)
-    this.methods[name] = handler
+    this.nats.subscribe(name, {queue: name}, (input, replyTo, subject) => {
+      Promise.resolve(input)
+        .then(handler)
+        .then(output => replyTo && this.nats.publish(replyTo, output))
+        .catch(this.errorHandler)
+    })
   }
 
+  /**
+   * should be called after started
+   * @async
+   * @param name
+   * @param input
+   * @returns output
+   */
   async call (name, input) {
     return new Promise((resolve, reject) => {
       this.nats.requestOne(name, input, {max: 1}, this.options.timeout, output => {
@@ -41,31 +52,12 @@ module.exports = class NATSMessageTransporter {
   async start () {
     this.nats = NATS.connect(this.options)
     this.nats.on('error', this.errorHandler)
-    return new Promise((resolve, reject) => {
-      this.nats.on('connect', () => {
-        this._registerMethods()
-        resolve()
-      })
-    })
+    return new Promise((resolve, reject) => { this.nats.on('connect', () => resolve()) })
   }
 
   async stop () {
     this.nats.close()
     return new Promise((resolve, reject) => {this.nats.on('close', () => resolve())})
-  }
-
-  _registerMethods () {
-    for (let name in this.methods) {
-      if (this.methods.hasOwnProperty(name)) {
-        const handler = this.methods[name]
-        this.nats.subscribe(name, {queue: name}, (input, replyTo, subject) => {
-          Promise.resolve(input)
-            .then(handler)
-            .then(output => replyTo && this.nats.publish(replyTo, output))
-            .catch(this.errorHandler)
-        })
-      }
-    }
   }
 }
 

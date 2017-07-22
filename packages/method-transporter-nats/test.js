@@ -18,10 +18,9 @@ describe('Transporter', () => {
 
   test('basic method', async () => {
     transporter = new Transporter()
+    await transporter.start()
 
     transporter.define('test.method', name => `hello ${name}`)
-
-    await transporter.start()
 
     const output = await transporter.call('test.method', 'Bob')
 
@@ -32,10 +31,9 @@ describe('Transporter', () => {
     expect.assertions(1)
 
     transporter = new Transporter({timeout: 100})
+    await transporter.start()
 
     transporter.define('test.method', name => `hello ${name}`)
-
-    await transporter.start()
 
     try {
       await transporter.call('no.method', 'Bob')
@@ -51,10 +49,9 @@ describe('Transporter', () => {
     const errors = []
     transporter = new Transporter({timeout: 100})
     transporter.setErrorHandler(err => errors.push(err))
+    await transporter.start()
 
     transporter.define('test.method', () => {throw new Error('test error')})
-
-    await transporter.start()
 
     try {
       await transporter.call('test.method', 'Bob')
@@ -69,6 +66,8 @@ describe('Transporter', () => {
   test('multiple handlers of same method name', async () => {
     transporter = new Transporter()
     transporter2 = new Transporter()
+    await transporter.start()
+    await transporter2.start()
 
     let counter = 0
     transporter.define('test.method', () => {
@@ -79,9 +78,6 @@ describe('Transporter', () => {
       counter++
       return 'world'
     })
-
-    await transporter.start()
-    await transporter2.start()
 
     let outputs = []
     for (let i = 0; i < 100; i++) {
