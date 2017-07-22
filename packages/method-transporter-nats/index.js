@@ -2,21 +2,9 @@ const NATS = require('nats')
 
 module.exports = class NATSMessageTransporter {
   constructor (options = {}) {
-    // micro services are usually deployed in an internal network
-    // in such a circumstance the communication should be fast
-    // and heavy work should be handled asynchronously
-    // so this default timeout should be long enough
-    if (!options.hasOwnProperty('timeout')) options.timeout = 5000
-    this.options = options
-    this.errorHandler = defaultErrorHandler
-  }
-
-  /**
-   * should be called before started
-   * @param errorHandler - async func(err)
-   */
-  setErrorHandler (errorHandler) {
-    this.errorHandler = errorHandler
+    const {errorHandler, timeout} = options
+    this.timeout = timeout || 5000
+    this.errorHandler = errorHandler || defaultErrorHandler
   }
 
   /**
@@ -42,15 +30,15 @@ module.exports = class NATSMessageTransporter {
    */
   async call (name, input) {
     return new Promise((resolve, reject) => {
-      this.nats.requestOne(name, input, {max: 1}, this.options.timeout, output => {
+      this.nats.requestOne(name, input, {max: 1}, this.timeout, output => {
         if (output instanceof Error) reject(output)
         else resolve(output)
       })
     })
   }
 
-  async start () {
-    this.nats = NATS.connect(this.options)
+  async start (options) {
+    this.nats = NATS.connect(options)
     this.nats.on('error', this.errorHandler)
     return new Promise((resolve, reject) => { this.nats.on('connect', () => resolve()) })
   }

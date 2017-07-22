@@ -47,8 +47,7 @@ describe('Transporter', () => {
     expect.assertions(2)
 
     const errors = []
-    transporter = new Transporter({timeout: 100})
-    transporter.setErrorHandler(err => errors.push(err))
+    transporter = new Transporter({timeout: 100, errorHandler: err => errors.push(err)})
     await transporter.start()
 
     transporter.define('test.method', () => {throw new Error('test error')})
