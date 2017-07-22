@@ -18,6 +18,7 @@ module.exports = class NATSTransporter {
    * @param handler - async func(input) => output
    */
   define (name, handler) {
+    name = `method.${name}`
     this.nats.subscribe(name, {queue: name}, (input, replyTo, subject) => {
       Promise.resolve(input)
         .then(handler)
@@ -34,6 +35,7 @@ module.exports = class NATSTransporter {
    * @returns output
    */
   async call (name, input) {
+    name = `method.${name}`
     return new Promise((resolve, reject) => {
       this.nats.requestOne(name, input, {max: 1}, this.timeout, output => {
         if (output instanceof Error) reject(output)
@@ -53,6 +55,7 @@ module.exports = class NATSTransporter {
       handler = group
       group = undefined
     }
+    name = `event.${name}`
 
     this.nats.subscribe(name, {queue: group}, (input, replyTo, subject) => {
       Promise.resolve(input)
@@ -68,6 +71,7 @@ module.exports = class NATSTransporter {
    * @param input
    */
   async emit (name, input) {
+    name = `event.${name}`
     return new Promise((resolve, reject) => {
       this.nats.publish(name, input, error => {
         if (error) reject(error)
