@@ -42,6 +42,40 @@ module.exports = class NATSTransporter {
     })
   }
 
+  /**
+   * should be called after started
+   * @param name
+   * @param [group]
+   * @param handler - async func(input)
+   */
+  on (name, group, handler) {
+    if (!handler) {
+      handler = group
+      group = undefined
+    }
+
+    this.nats.subscribe(name, {queue: group}, (input, replyTo, subject) => {
+      Promise.resolve(input)
+        .then(handler)
+        .catch(this.errorHandler)
+    })
+  }
+
+  /**
+   * should be called after started
+   * @async
+   * @param name
+   * @param input
+   */
+  async emit (name, input) {
+    return new Promise((resolve, reject) => {
+      this.nats.publish(name, input, error => {
+        if (error) reject(error)
+        else resolve()
+      })
+    })
+  }
+
   async start (options) {
     this.nats = NATS.connect(options)
     this.nats.on('error', this.errorHandler)

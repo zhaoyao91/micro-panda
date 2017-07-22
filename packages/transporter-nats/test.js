@@ -88,4 +88,40 @@ describe('Transporter', () => {
     expect(outputs.includes('world')).toBe(true)
     expect(counter).toBe(100)
   })
+
+  test('basic event', async () => {
+    expect.assertions(1)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.event', input => expect(input).toBe('hello world'))
+    await transporter.emit('test.event', 'hello world')
+  })
+
+  test('event to many listeners', async () => {
+    expect.assertions(3)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.event', input => expect(input).toBe('hello world'))
+    transporter.on('test.event', input => expect(input).toBe('hello world'))
+    transporter.on('test.event', input => expect(input).toBe('hello world'))
+
+    await transporter.emit('test.event', 'hello world')
+  })
+
+  test('for a event, only one of members of a group will receive it', async () => {
+    expect.assertions(2)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.event', input => expect(input).toBe('hello world'))
+    transporter.on('test.event', 'test-group', input => expect(input).toBe('hello world'))
+    transporter.on('test.event', 'test-group', input => expect(input).toBe('hello world'))
+
+    await transporter.emit('test.event', 'hello world')
+  })
 })
