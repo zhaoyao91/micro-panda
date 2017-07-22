@@ -57,7 +57,7 @@ module.exports = class Broker {
   }
 
   /**
-   * should be called after transporter started
+   * should be called after started
    * @async
    * @param name
    * @param input
@@ -105,7 +105,7 @@ module.exports = class Broker {
   }
 
   /**
-   * should be called after transporter started
+   * should be called after started
    * @async
    * @param name
    * @param input
