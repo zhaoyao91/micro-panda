@@ -8,10 +8,9 @@
   },
   "author": "zhaoyao91 <zhaoyao91@163.com>",
   "devDependencies": {
-    "jest": "^20.0.4",
-    "ejson": "^2.1.2"
+    "jest": "^20.0.4"
   },
-  "peerDependencies": {
-    "ejson": "^2.x.x"
+  "dependencies": {
+    "ejson": "^2.1.2"
   }
 }

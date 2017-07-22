@@ -6,7 +6,7 @@ const EJSON = require('ejson')
  * - undefined in an array will be serialized as null (JSON spec)
  * - field in object with undefined value will be omitted (JSON spec)
  */
-module.exports = class EJSONSerializer {
+class EJSONSerializer {
   serialize (input) {
     if (input === undefined) return undefined
     else return EJSON.stringify(input)
@@ -17,3 +17,7 @@ module.exports = class EJSONSerializer {
     else return EJSON.parse(input)
   }
 }
+
+EJSONSerializer.EJSON = EJSON
+
+module.exports =  EJSONSerializer
