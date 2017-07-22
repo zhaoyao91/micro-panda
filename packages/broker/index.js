@@ -22,14 +22,20 @@ module.exports = class Broker {
     this.serializer = serializer || new EJSONSerializer()
     this.protocol = new Protocol()
     this.logger = logger || console
+    this.methodHandlers = []
+    this.eventHandlers = []
   }
 
   /**
-   * should be called after transporter started
    * @param name
    * @param handler - async func(input, message) => output
    */
   define (name, handler) {
+    this.methodHandlers.push([name, handler])
+    if (this._started) this._define(name, handler)
+  }
+
+  _define (name, handler) {
     const transporterHandler = async reqData => {
       let reqMessage
       try {
@@ -76,11 +82,15 @@ module.exports = class Broker {
   }
 
   /**
-   * should be called after transporter started
    * @param name
    * @param handler - async func(input, message)
    */
   on (name, handler) {
+    this.eventHandlers.push([name, handler])
+    if (this._started) this._on(name, handler)
+  }
+
+  _on (name, handler) {
     const transporterHandler = async reqData => {
       try {
         const reqMessage = this.serializer.deserialize(reqData)
@@ -106,17 +116,18 @@ module.exports = class Broker {
     await this.transporter.emit(name, reqData)
   }
 
-  /**
-   * proxy for inner transporter
-   */
   async start (...args) {
-    return await this.transporter.start(...args)
+    if (this._started) throw new BrokerError('broker is already started')
+    const result = await this.transporter.start(...args)
+    this._started = true
+    this.methodHandlers.forEach(pair => this._define(...pair))
+    this.eventHandlers.forEach(pair => this._on(...pair))
+    return result
   }
 
-  /**
-   * proxy for inner transporter
-   */
   async stop (...args) {
+    if (!this._started) throw new BrokerError('broker is not started yet')
+    this._started = false
     return await this.transporter.stop(...args)
   }
 }

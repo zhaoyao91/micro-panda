@@ -2,17 +2,15 @@ const Transporter = require('micro-panda-transporter-nats')
 const Broker = require('./index')
 
 describe('Broker', function () {
-  let transporter = null
   let broker = null
 
   afterEach(async () => {
-    await transporter.stop()
+    await broker.stop()
   })
 
   test('basic request', async () => {
-    transporter = new Transporter()
-    await transporter.start()
-    broker = new Broker({transporter})
+    broker = new Broker({transporter: new Transporter()})
+    await broker.start()
 
     broker.define('test.method', input => input)
     const output = await broker.call('test.method', {name: 'Bob'})
@@ -21,9 +19,8 @@ describe('Broker', function () {
   })
 
   test('request for message', async () => {
-    transporter = new Transporter()
-    await transporter.start()
-    broker = new Broker({transporter})
+    broker = new Broker({transporter: new Transporter()})
+    await broker.start()
 
     broker.define('test.method', input => input)
     const message = await broker.call('test.method', {name: 'Bob'}, true)
@@ -36,9 +33,8 @@ describe('Broker', function () {
   test('error from server to client', async () => {
     expect.assertions(2)
 
-    transporter = new Transporter()
-    await transporter.start()
-    broker = new Broker({transporter, errorHandler: err => err})
+    broker = new Broker({transporter: new Transporter(), errorHandler: err => err})
+    await broker.start()
 
     broker.define('test.method', input => {throw new TypeError('test type error')})
     try {
@@ -53,9 +49,8 @@ describe('Broker', function () {
   test('method not found', async () => {
     expect.assertions(2)
 
-    transporter = new Transporter({timeout: 100})
-    await transporter.start()
-    broker = new Broker({transporter})
+    broker = new Broker({transporter: new Transporter({timeout: 100})})
+    await broker.start()
 
     broker.define('test.method', input => input)
     try {
@@ -70,9 +65,8 @@ describe('Broker', function () {
   test('change error handler', async () => {
     expect.assertions(2)
 
-    transporter = new Transporter()
-    await transporter.start()
-    broker = new Broker({transporter, errorHandler: err => null})
+    broker = new Broker({transporter: new Transporter(), errorHandler: err => null})
+    await broker.start()
 
     broker.define('test.method', input => {throw new TypeError('test type error')})
     try {
@@ -87,9 +81,8 @@ describe('Broker', function () {
   test('basic event', async () => {
     expect.assertions(4)
 
-    transporter = new Transporter()
-    await transporter.start()
-    broker = new Broker({transporter})
+    broker = new Broker({transporter: new Transporter()})
+    await broker.start()
 
     broker.on('test.event', (input, message) => {
       expect(input).toEqual({name: 'Bob'})
@@ -97,6 +90,35 @@ describe('Broker', function () {
       expect(message.type).toBe('event')
       expect(message.input).toEqual({name: 'Bob'})
     })
+    await broker.emit('test.event', {name: 'Bob'})
+  })
+
+  test('define method before started', async () => {
+    broker = new Broker({transporter: new Transporter()})
+
+    broker.define('test.method', input => input)
+
+    await broker.start()
+
+    const output = await broker.call('test.method', {name: 'Bob'})
+
+    expect(output).toEqual({name: 'Bob'})
+  })
+
+  test('listen to event before started', async () => {
+    expect.assertions(4)
+
+    broker = new Broker({transporter: new Transporter()})
+
+    broker.on('test.event', (input, message) => {
+      expect(input).toEqual({name: 'Bob'})
+      expect(message.protocol).toBeDefined()
+      expect(message.type).toBe('event')
+      expect(message.input).toEqual({name: 'Bob'})
+    })
+
+    await broker.start()
+
     await broker.emit('test.event', {name: 'Bob'})
   })
 })
