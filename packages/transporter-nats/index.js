@@ -1,6 +1,11 @@
 const NATS = require('nats')
 
-module.exports = class NATSMessageTransporter {
+module.exports = class NATSTransporter {
+  /**
+   * @param options
+   * @param options.errorHandler - function(err)
+   * @param options.timeout - milliseconds
+   */
   constructor (options = {}) {
     const {errorHandler, timeout} = options
     this.timeout = timeout || 5000

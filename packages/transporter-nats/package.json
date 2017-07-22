@@ -1,5 +1,5 @@
 {
-  "name": "micro-panda-protocol",
+  "name": "micro-panda-transporter-nats",
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,6 @@
     "jest": "^20.0.4"
   },
   "dependencies": {
-    "error-utils": "^1.0.0",
-    "uuid": "^3.1.0"
+    "nats": "^0.7.20"
   }
 }

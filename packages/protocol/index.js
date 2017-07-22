@@ -5,7 +5,6 @@
  * {
  *   protocol: 'mmp.1',
  *   type: 'request' | 'response' | 'event',
- *   name: String, // target name or event name
  *   id: String,
  *   requestId: String, // the message id of the request to respond, for type.response
  *   timestamp: Number,
@@ -29,25 +28,21 @@
 const uuid = require('uuid/v4')
 const {makeError} = require('error-utils')
 
-module.exports = class Protocol {
-  static protocol = 'mmp.1'
-
-  buildRequestEnvelope ({name, input}) {
+class Protocol {
+  buildRequestEnvelope ({input}) {
     return {
       protocol: Protocol.protocol,
       type: 'request',
-      name,
       id: uuid(),
       timestamp: (new Date()).getTime(),
       input,
     }
   }
 
-  buildResponseEnvelope ({requestId, name, output, error}) {
+  buildResponseEnvelope ({requestId, output, error}) {
     return {
       protocol: Protocol.protocol,
       type: 'response',
-      name,
       id: uuid(),
       requestId,
       timestamp: (new Date()).getTime(),
@@ -56,17 +51,42 @@ module.exports = class Protocol {
     }
   }
 
-  buildEventEnvelope ({name, input}) {
+  buildEventEnvelope ({input}) {
     return {
       protocol: Protocol.protocol,
       type: 'event',
-      name,
       id: uuid(),
       timestamp: (new Date()).getTime(),
       input,
     }
   }
+
+  checkRequestEnvelope (envelope) {
+    if (!isPlainObject(envelope) || envelope.protocol !== Protocol.protocol || envelope.type !== 'request') {
+      throw new MMPParseError('invalid envelope')
+    }
+  }
+
+  checkResponseEnvelope (envelope) {
+    if (!isPlainObject(envelope) || envelope.protocol !== Protocol.protocol || envelope.type !== 'response') {
+      throw new MMPParseError('invalid envelope')
+    }
+  }
+
+  checkEventEnvelope (envelope) {
+    if (!isPlainObject(envelope) || envelope.protocol !== Protocol.protocol || envelope.type !== 'event') {
+      throw new MMPParseError('invalid envelope')
+    }
+  }
 }
+
+Protocol.protocol = 'mmp.1'
+
+module.exports = Protocol
 
 const MMPBuildError = makeError('MMPBuildError')
 const MMPParseError = makeError('MMPParseError')
+
+function isPlainObject (object) {
+  return typeof object === 'object' && object !== null && !Array.isArray(object)
+}
