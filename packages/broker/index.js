@@ -100,6 +100,20 @@ module.exports = class Broker {
     const reqData = this.serializer.serialize(reqMessage)
     await this.transporter.emit(name, reqData)
   }
+
+  /**
+   * proxy for inner transporter
+   */
+  async start(...args) {
+    return await this.transporter.start(...args)
+  }
+
+  /**
+   * proxy for inner transporter
+   */
+  async stop(...args) {
+    return await this.transporter.stop(...args)
+  }
 }
 
 function defaultErrorHandler (err) {
