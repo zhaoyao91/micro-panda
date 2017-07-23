@@ -131,4 +131,51 @@ describe('Transporter', () => {
 
     await transporter.emit('test.event', 'hello world')
   })
+
+  test('event name with *', async () => {
+    expect.assertions(2)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.*', input => expect(input).toBe('hello world'))
+
+    await transporter.emit('test.event', 'hello world')
+    await transporter.emit('test.other', 'hello world')
+  })
+
+  test('event name with * (2)', async () => {
+    expect.assertions(0)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.*', input => expect(input).toBe('hello world'))
+
+    await transporter.emit('test.event.other', 'hello world')
+  })
+
+  test('event name with >', async () => {
+    expect.assertions(2)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.>', input => expect(input).toBe('hello world'))
+
+    await transporter.emit('test.event', 'hello world')
+    await transporter.emit('test.event.other', 'hello world')
+  })
+
+  test('event name with > (2)', async () => {
+    expect.assertions(0)
+
+    transporter = new Transporter()
+    await transporter.start()
+
+    transporter.on('test.>', input => expect(input).toBe('hello world'))
+
+    await transporter.emit('test', 'hello world')
+    await transporter.emit('wrong.event.other', 'hello world')
+  })
 })
