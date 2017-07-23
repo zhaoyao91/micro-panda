@@ -41,15 +41,15 @@ module.exports = class Broker {
       try {
         reqMessage = this.serializer.deserialize(reqData)
         this.protocol.checkRequestEnvelope(reqMessage)
-        const output = await handler(reqMessage.input, reqMessage)
-        const resMessage = this.protocol.buildResponseEnvelope({requestId: reqMessage.id, output})
+        const output = await handler(reqMessage.payload, reqMessage)
+        const resMessage = this.protocol.buildResponseEnvelope({payload: output})
         return this.serializer.serialize(resMessage)
       }
       catch (err) {
         err = await this.errorHandler(err)
         if (!err) err = new BrokerError('internal server error')
         const errObj = errorToObject(err)
-        const resMessage = this.protocol.buildResponseEnvelope({requestId: reqMessage && reqMessage.id, error: errObj})
+        const resMessage = this.protocol.buildResponseEnvelope({error: errObj})
         return this.serializer.serialize(resMessage)
       }
     }
@@ -68,7 +68,7 @@ module.exports = class Broker {
    * @returns output | message
    */
   async call (name, input, returnMessage) {
-    const reqMessage = this.protocol.buildRequestEnvelope({input})
+    const reqMessage = this.protocol.buildRequestEnvelope({payload: input})
     const reqData = this.serializer.serialize(reqMessage)
     const resData = await this.transporter.call(name, reqData)
     const resMessage = this.serializer.deserialize(resData)
@@ -77,7 +77,7 @@ module.exports = class Broker {
     if (returnMessage) return resMessage
     else {
       if (resMessage.error) throw objectToError(resMessage.error)
-      else return resMessage.output
+      else return resMessage.payload
     }
   }
 
@@ -95,7 +95,7 @@ module.exports = class Broker {
       try {
         const reqMessage = this.serializer.deserialize(reqData)
         this.protocol.checkEventEnvelope(reqMessage)
-        await handler(reqMessage.input, reqMessage)
+        await handler(reqMessage.payload, reqMessage)
       }
       catch (err) {
         await this.errorHandler(err)
@@ -111,7 +111,7 @@ module.exports = class Broker {
    * @param input
    */
   async emit (name, input) {
-    const reqMessage = this.protocol.buildEventEnvelope({input})
+    const reqMessage = this.protocol.buildEventEnvelope({payload: input})
     const reqData = this.serializer.serialize(reqMessage)
     await this.transporter.emit(name, reqData)
   }

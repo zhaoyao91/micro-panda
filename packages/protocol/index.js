@@ -1,63 +1,29 @@
-/**
- * Micro Panda Protocol
- *
- * Message
- * {
- *   protocol: 'mmp.1',
- *   type: 'request' | 'response' | 'event',
- *   id: String,
- *   requestId: String, // the message id of the request to respond, for type.response
- *   timestamp: Number,
- *
- *   input: Any, // optional, for type.request, type.event
- *   output: Any, // optional, for type.response
- *   error: ErrorObject, // optional, for type.response
- * }
- *
- * ErrorObject
- * {
- *   name: String,
- *   message: String,
- *   stack: String,
- *   ownStack: String, // optional
- *   cause: ErrorObject, // optional
- *   rootCause: ErrorObject, // optional
- * }
- */
-
 const uuid = require('uuid/v4')
 const {makeError} = require('error-utils')
 
 class Protocol {
-  buildRequestEnvelope ({input}) {
+  buildRequestEnvelope ({payload}) {
     return {
       protocol: Protocol.protocol,
       type: 'request',
-      id: uuid(),
-      timestamp: (new Date()).getTime(),
-      input,
+      payload,
     }
   }
 
-  buildResponseEnvelope ({requestId, output, error}) {
+  buildResponseEnvelope ({payload, error}) {
     return {
       protocol: Protocol.protocol,
       type: 'response',
-      id: uuid(),
-      requestId,
-      timestamp: (new Date()).getTime(),
-      output,
+      payload,
       error,
     }
   }
 
-  buildEventEnvelope ({input}) {
+  buildEventEnvelope ({payload}) {
     return {
       protocol: Protocol.protocol,
       type: 'event',
-      id: uuid(),
-      timestamp: (new Date()).getTime(),
-      input,
+      payload,
     }
   }
 

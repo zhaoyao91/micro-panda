@@ -27,7 +27,7 @@ describe('Broker', function () {
 
     expect(message.protocol).toBeDefined()
     expect(message.type).toBe('response')
-    expect(message.output).toEqual({name: 'Bob'})
+    expect(message.payload).toEqual({name: 'Bob'})
   })
 
   test('error from server to client', async () => {
@@ -88,7 +88,7 @@ describe('Broker', function () {
       expect(input).toEqual({name: 'Bob'})
       expect(message.protocol).toBeDefined()
       expect(message.type).toBe('event')
-      expect(message.input).toEqual({name: 'Bob'})
+      expect(message.payload).toEqual({name: 'Bob'})
     })
     await broker.emit('test.event', {name: 'Bob'})
   })
@@ -114,7 +114,7 @@ describe('Broker', function () {
       expect(input).toEqual({name: 'Bob'})
       expect(message.protocol).toBeDefined()
       expect(message.type).toBe('event')
-      expect(message.input).toEqual({name: 'Bob'})
+      expect(message.payload).toEqual({name: 'Bob'})
     })
 
     await broker.start()
