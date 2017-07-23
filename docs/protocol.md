@@ -23,8 +23,8 @@
   name: String,
   message: String,
   stack: String,
-  ownStack: String, // optional
-  cause: ErrorObject, // optional
-  rootCause: ErrorObject, // optional
+  
+  // any other customized fields
+  // ...
 }
 ```
