@@ -4,6 +4,7 @@ const NATS = require('nats')
 describe('Transporter', () => {
   let transporter = null
   let transporter2 = null
+  let transporter3 = null
 
   afterEach(() => {
     if (transporter) {
@@ -13,6 +14,10 @@ describe('Transporter', () => {
     if (transporter2) {
       transporter2.stop()
       transporter2 = null
+    }
+    if (transporter3) {
+      transporter3.stop()
+      transporter3 = null
     }
   })
 
@@ -65,11 +70,13 @@ describe('Transporter', () => {
   test('multiple handlers of same method name', async () => {
     transporter = new Transporter()
     transporter2 = new Transporter()
+    transporter3 = new Transporter()
     await transporter.start()
     await transporter2.start()
+    await transporter3.start()
 
     let counter = 0
-    transporter.define('test.method', () => {
+    transporter.define('test.method', async () => {
       counter++
       return 'hello'
     })
@@ -80,7 +87,7 @@ describe('Transporter', () => {
 
     let outputs = []
     for (let i = 0; i < 100; i++) {
-      outputs.push(transporter.call('test.method'))
+      outputs.push(transporter3.call('test.method'))
     }
     outputs = await Promise.all(outputs)
 

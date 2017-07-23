@@ -37,7 +37,7 @@ describe('JoiValidator', function () {
   test('block invalid input', async () => {
     expect.assertions(1)
 
-    broker = new Broker({transporter: new Transporter()})
+    broker = new Broker({transporter: new Transporter(), logger: {error(){}}})
     await broker.start()
 
     broker.define('test.joi', validate({
