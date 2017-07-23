@@ -31,7 +31,7 @@ describe('Broker', function () {
   })
 
   test('error from server to client', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
 
     broker = new Broker({transporter: new Transporter(), errorHandler: () => {}})
     await broker.start()
@@ -42,6 +42,7 @@ describe('Broker', function () {
     }
     catch (err) {
       expect(err.name).toBe('TypeError')
+      expect(err.isRemote).toBe(true)
     }
   })
 

@@ -78,7 +78,11 @@ module.exports = class Broker {
 
     if (returnMessage) return resMessage
     else {
-      if (resMessage.error) throw this.remoteMethodErrorHandler.objectToError(resMessage.error)
+      if (resMessage.error) {
+        const error = this.remoteMethodErrorHandler.objectToError(resMessage.error)
+        error.isRemote = true
+        throw error
+      }
       else return resMessage.payload
     }
   }
