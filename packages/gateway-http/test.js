@@ -125,7 +125,6 @@ describe('HTTP Gateway', () => {
 
     expect(res.status).toBe(500)
     const output = await res.json()
-    expect(output.name).toBe('RemoteMethodError')
-    expect(output.causes[0].name).toBe('TypeError')
+    expect(output.name).toBe('TypeError')
   })
 })

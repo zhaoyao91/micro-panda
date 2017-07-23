@@ -41,7 +41,7 @@ describe('Broker', function () {
       await broker.call('test.method', {name: 'Bob'})
     }
     catch (err) {
-      expect(err.name).toBe('RemoteMethodError')
+      expect(err.name).toBe('TypeError')
     }
   })
 
@@ -62,7 +62,7 @@ describe('Broker', function () {
   })
 
   test('change remote method error handler', async () => {
-    expect.assertions(3)
+    expect.assertions(2)
 
     broker = new Broker({
       transporter: new Transporter(),
@@ -78,12 +78,11 @@ describe('Broker', function () {
     catch (err) {
       expect(err.name).toBe('RemoteMethodError')
       expect(err.message).toBe('failed to handle request')
-      expect(err.causes).toBeUndefined()
     }
   })
 
   test('change error handler', async () => {
-    expect.assertions(3)
+    expect.assertions(2)
 
     broker = new Broker({
       transporter: new Transporter(),
@@ -96,8 +95,7 @@ describe('Broker', function () {
       await broker.call('test.method', {name: 'Bob'})
     }
     catch (err) {
-      expect(err.name).toBe('RemoteMethodError')
-      expect(err.causes[0].name).toBe('TypeError')
+      expect(err.name).toBe('TypeError')
     }
   })
 

@@ -1,7 +1,7 @@
 const EJSONSerializer = require('micro-panda-serializer-ejson')
 const Protocol = require('micro-panda-protocol')
-const defaultRemoteMethodErrorHandler = require('./default-remote-method-error-handler')
 const {BrokerError, RemoteMethodError} = require('./errors')
+const {errorToObject, objectToError} = require('error-utils')
 
 module.exports = class Broker {
   /**
@@ -134,3 +134,8 @@ module.exports = class Broker {
   }
 }
 
+const defaultRemoteMethodErrorHandler = {
+  map: err => err,
+  errorToObject,
+  objectToError,
+}
