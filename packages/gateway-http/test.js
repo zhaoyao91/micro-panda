@@ -1,4 +1,3 @@
-const {send} = require('micro')
 const listen = require('test-listen')
 const fetch = require('node-fetch')
 
@@ -126,21 +125,7 @@ describe('HTTP Gateway', () => {
 
     expect(res.status).toBe(500)
     const output = await res.json()
-    expect(output.name).toBe('TypeError')
-    expect(output.message).toBe('test error')
-  })
-
-  test('display error', async () => {
-    broker = new Broker({transporter: new Transporter(), logger: {error(){}}})
-    await broker.start()
-    service = buildService({broker, logger: {error(){}}, displayError(err){return 'ERROR'}})
-    const url = await listen(service)
-
-    broker.define('error.method', () => {throw new TypeError('test error')})
-
-    const res = await fetch(`${url}/call/error.method`)
-
-    expect(res.status).toBe(500)
-    await expect(res.text()).resolves.toBe('ERROR')
+    expect(output.name).toBe('RemoteMethodError')
+    expect(output.causes[0].name).toBe('TypeError')
   })
 })

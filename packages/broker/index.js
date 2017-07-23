@@ -1,23 +1,24 @@
 const EJSONSerializer = require('micro-panda-serializer-ejson')
 const Protocol = require('micro-panda-protocol')
-const {makeError, objectToError, errorToObject} = require('error-utils')
+const defaultRemoteMethodErrorHandler = require('./default-remote-method-error-handler')
+const {BrokerError, RemoteMethodError} = require('./errors')
 
 module.exports = class Broker {
   /**
    * @param transporter
    * @param [serializer] - default to EJSON serializer
-   * @param [errorHandler] - async func(err) => err
-   * - the returned error will have some effect on the response
-   * - if it returns an error, it will be send to client
-   * - if it returns non-error, an BrokerError will be send to client
-   * - the default behavior is logging the error and returning the received error
+   * @param [errorHandler] - async func(err) - default behavior is `logger.error(err)`
+   * @param [remoteMethodErrorHandler] - fields could be overridden individually
+   * @param remoteMethodErrorHandler.map - func(err) => err
+   * - the returned error will be sent to client
+   * - if it returns non-error, a RemoteMethodError without any details will be sent
+   * @param remoteMethodErrorHandler.errorToObject - func(err) => object
+   * @param remoteMethodErrorHandler.objectToError - func(object) => err
    * @param [logger] - default to console
    */
-  constructor ({errorHandler, transporter, serializer, logger}) {
-    this.errorHandler = errorHandler ? errorHandler : err => {
-      this.logger.error(err)
-      return err
-    }
+  constructor ({errorHandler, remoteMethodErrorHandler, transporter, serializer, logger}) {
+    this.errorHandler = errorHandler ? errorHandler : err => this.logger.error(err)
+    this.remoteMethodErrorHandler = Object.assign({}, defaultRemoteMethodErrorHandler, remoteMethodErrorHandler)
     this.transporter = transporter
     this.serializer = serializer || new EJSONSerializer()
     this.protocol = new Protocol()
@@ -46,9 +47,10 @@ module.exports = class Broker {
         return this.serializer.serialize(resMessage)
       }
       catch (err) {
-        err = await this.errorHandler(err)
-        if (!err) err = new BrokerError('internal server error')
-        const errObj = errorToObject(err)
+        await this.errorHandler(err)
+        err = this.remoteMethodErrorHandler.map(err)
+        if (!(err instanceof Error)) err = new RemoteMethodError('failed to handle request')
+        const errObj = this.remoteMethodErrorHandler.errorToObject(err)
         const resMessage = this.protocol.buildResponseEnvelope({error: errObj})
         return this.serializer.serialize(resMessage)
       }
@@ -76,7 +78,7 @@ module.exports = class Broker {
 
     if (returnMessage) return resMessage
     else {
-      if (resMessage.error) throw objectToError(resMessage.error)
+      if (resMessage.error) throw this.remoteMethodErrorHandler.objectToError(resMessage.error)
       else return resMessage.payload
     }
   }
@@ -132,4 +134,3 @@ module.exports = class Broker {
   }
 }
 
-const BrokerError = makeError('BrokerError')

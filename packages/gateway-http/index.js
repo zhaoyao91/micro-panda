@@ -1,9 +1,8 @@
 const micro = require('micro')
 const {send, text} = require('micro')
 const URL = require('url')
-const {errorToObject} = require('error-utils')
 
-module.exports = ({broker, allow = () => true, prefix = '', logger = console, displayError = errorToObject}) => micro(async (req, res) => {
+module.exports = ({broker, allow = () => true, prefix = '', logger = console}) => micro(async (req, res) => {
   const result = matchUrl(req.url, {prefix})
   if (!result) return send(res, 404, 'not found')
 
@@ -40,7 +39,7 @@ module.exports = ({broker, allow = () => true, prefix = '', logger = console, di
   }
   catch (err) {
     logger.error(err)
-    return send(res, 500, displayError(err))
+    return send(res, 500, err)
   }
 })
 

@@ -15,7 +15,6 @@
     "test-listen": "^1.0.2"
   },
   "dependencies": {
-    "error-utils": "^1.0.0",
     "micro": "^7.3.3"
   }
 }

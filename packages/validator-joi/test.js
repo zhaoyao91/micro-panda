@@ -49,7 +49,7 @@ describe('JoiValidator', function () {
       await broker.call('test.joi', {name: 'Bob', age: 'twenty-two'})
     }
     catch (err) {
-      expect(err.name).toBe('ValidationError')
+      expect(err.causes[0].name).toBe('ValidationError')
     }
   })
 })

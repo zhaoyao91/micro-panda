@@ -12,7 +12,7 @@
     "micro-panda-transporter-nats": "^0.1.0"
   },
   "dependencies": {
-    "error-utils": "^1.0.0",
+    "error-utils": "^2.0.0",
     "micro-panda-protocol": "^0.1.0",
     "micro-panda-serializer-ejson": "^0.1.0"
   }

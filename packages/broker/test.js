@@ -31,9 +31,9 @@ describe('Broker', function () {
   })
 
   test('error from server to client', async () => {
-    expect.assertions(2)
+    expect.assertions(1)
 
-    broker = new Broker({transporter: new Transporter(), errorHandler: err => err})
+    broker = new Broker({transporter: new Transporter(), errorHandler: () => {}})
     await broker.start()
 
     broker.define('test.method', input => {throw new TypeError('test type error')})
@@ -41,8 +41,7 @@ describe('Broker', function () {
       await broker.call('test.method', {name: 'Bob'})
     }
     catch (err) {
-      expect(err.name).toBe('TypeError')
-      expect(err.message).toBe('test type error')
+      expect(err.name).toBe('RemoteMethodError')
     }
   })
 
@@ -62,10 +61,14 @@ describe('Broker', function () {
     }
   })
 
-  test('change error handler', async () => {
-    expect.assertions(2)
+  test('change remote method error handler', async () => {
+    expect.assertions(3)
 
-    broker = new Broker({transporter: new Transporter(), errorHandler: err => null})
+    broker = new Broker({
+      transporter: new Transporter(),
+      errorHandler: () => {},
+      remoteMethodErrorHandler: {map: err => null}
+    })
     await broker.start()
 
     broker.define('test.method', input => {throw new TypeError('test type error')})
@@ -73,8 +76,28 @@ describe('Broker', function () {
       await broker.call('test.method', {name: 'Bob'})
     }
     catch (err) {
-      expect(err.name).toBe('BrokerError')
-      expect(err.message).toBe('internal server error')
+      expect(err.name).toBe('RemoteMethodError')
+      expect(err.message).toBe('failed to handle request')
+      expect(err.causes).toBeUndefined()
+    }
+  })
+
+  test('change error handler', async () => {
+    expect.assertions(3)
+
+    broker = new Broker({
+      transporter: new Transporter(),
+      errorHandler: (err) => {expect(err instanceof Error).toBe(true)}
+    })
+    await broker.start()
+
+    broker.define('test.method', input => {throw new TypeError('test type error')})
+    try {
+      await broker.call('test.method', {name: 'Bob'})
+    }
+    catch (err) {
+      expect(err.name).toBe('RemoteMethodError')
+      expect(err.causes[0].name).toBe('TypeError')
     }
   })
 
