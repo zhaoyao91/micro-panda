@@ -1,6 +1,6 @@
 {
   "name": "micro-panda-broker",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -9,11 +9,11 @@
   "author": "zhaoyao91 <zhaoyao91@163.com>",
   "devDependencies": {
     "jest": "^20.0.4",
-    "micro-panda-transporter-nats": "^0.0.1"
+    "micro-panda-transporter-nats": "^0.1.0"
   },
   "dependencies": {
     "error-utils": "^1.0.0",
-    "micro-panda-protocol": "^0.0.1",
-    "micro-panda-serializer-ejson": "^0.0.1"
+    "micro-panda-protocol": "^0.1.0",
+    "micro-panda-serializer-ejson": "^0.1.0"
   }
 }
