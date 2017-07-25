@@ -178,4 +178,34 @@ describe('Transporter', () => {
     await transporter.emit('test', 'hello world')
     await transporter.emit('wrong.event.other', 'hello world')
   })
+
+  test('define before started', async () => {
+    transporter = new Transporter()
+
+    transporter.define('test.method', name => `hello ${name}`)
+
+    await transporter.start()
+
+    await expect(transporter.call('test.method', 'Bob')).resolves.toBe('hello Bob')
+
+    await transporter.stop()
+    await transporter.start()
+
+    await expect(transporter.call('test.method', 'Bob')).resolves.toBe('hello Bob')
+  })
+
+  test('listen to event before started', async () => {
+    expect.assertions(2)
+
+    transporter = new Transporter()
+    transporter.on('test.event', input => expect(input).toBe('hello world'))
+    transporter.on('test.event2', input => expect(input).toBe('hi world'))
+
+    await transporter.start()
+    await transporter.emit('test.event', 'hello world')
+
+    await transporter.stop()
+    await transporter.start()
+    await transporter.emit('test.event2', 'hi world')
+  })
 })

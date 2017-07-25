@@ -7,11 +7,11 @@
 params:
 
 - errorHandler - func(err)
-- timeout - default to 5000. if a method call does not receive any response for such a time, it fails.
+- timeout - default to 1 minute. if a method call does not receive any response for such a time, it fails.
 
 #### define
 
-define a method. should be called after started.
+define a method.
 
 params: 
 
@@ -33,11 +33,12 @@ returns
 
 #### on
 
-listen to events. should be called after started.
+listen to events.
 
 params: 
 
 - name
+- [group]
 - handler - async func(input)
 
 #### emit

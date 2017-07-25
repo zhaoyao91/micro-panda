@@ -3,14 +3,12 @@
 ```ecmascript 6
 class Transporter {
   /**
-   * should be called after started
    * @param name
    * @param handler - async func(input) => output
    */
   define(name, handler) {}
   
   /**
-   * should be called after started
    * @async
    * @param name
    * @param input
@@ -35,6 +33,7 @@ class Transporter {
   async emit (name, input) {}
   
   /**
+   * the methods and events listeners should retain through start and restart 
    * @async
    * @param args - any args it need to properly start the transporter
    */
