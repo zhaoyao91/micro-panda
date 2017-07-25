@@ -47,6 +47,7 @@ listen to events.
 params: 
 
 - name
+- [group]
 - handler - async func(input, message)
 
 #### async emit

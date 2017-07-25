@@ -1,6 +1,6 @@
 const EJSONSerializer = require('micro-panda-serializer-ejson')
 const Protocol = require('micro-panda-protocol')
-const {BrokerError, RemoteMethodError} = require('./errors')
+const {RemoteMethodError} = require('./errors')
 const {errorToObject, objectToError} = require('error-utils')
 
 module.exports = class Broker {
@@ -23,8 +23,6 @@ module.exports = class Broker {
     this.serializer = serializer || new EJSONSerializer()
     this.protocol = new Protocol()
     this.logger = logger || console
-    this.methodHandlers = []
-    this.eventHandlers = []
   }
 
   /**
@@ -32,11 +30,6 @@ module.exports = class Broker {
    * @param handler - async func(input, message) => output
    */
   define (name, handler) {
-    this.methodHandlers.push([name, handler])
-    if (this._started) this._define(name, handler)
-  }
-
-  _define (name, handler) {
     const transporterHandler = async reqData => {
       let reqMessage
       try {
@@ -89,14 +82,14 @@ module.exports = class Broker {
 
   /**
    * @param name
+   * @param [group]
    * @param handler - async func(input, message)
    */
-  on (name, handler) {
-    this.eventHandlers.push([name, handler])
-    if (this._started) this._on(name, handler)
-  }
-
-  _on (name, handler) {
+  on (name, group, handler) {
+    if (!handler) {
+      handler = group
+      group = undefined
+    }
     const transporterHandler = async reqData => {
       try {
         const reqMessage = this.serializer.deserialize(reqData)
@@ -107,7 +100,7 @@ module.exports = class Broker {
         await this.errorHandler(err)
       }
     }
-    this.transporter.on(name, transporterHandler)
+    this.transporter.on(name, group, transporterHandler)
   }
 
   /**
@@ -123,17 +116,10 @@ module.exports = class Broker {
   }
 
   async start (...args) {
-    if (this._started) throw new BrokerError('broker is already started')
-    const result = await this.transporter.start(...args)
-    this._started = true
-    this.methodHandlers.forEach(pair => this._define(...pair))
-    this.eventHandlers.forEach(pair => this._on(...pair))
-    return result
+    return await this.transporter.start(...args)
   }
 
   async stop (...args) {
-    if (!this._started) throw new BrokerError('broker is not started yet')
-    this._started = false
     return await this.transporter.stop(...args)
   }
 }

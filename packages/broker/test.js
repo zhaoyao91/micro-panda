@@ -1,5 +1,6 @@
 const Transporter = require('micro-panda-transporter-nats')
 const Broker = require('./index')
+const _ = require('lodash')
 
 describe('Broker', function () {
   let broker = null
@@ -113,6 +114,21 @@ describe('Broker', function () {
       expect(message.payload).toEqual({name: 'Bob'})
     })
     await broker.emit('test.event', {name: 'Bob'})
+  })
+
+  test('group event', async () => {
+    broker = new Broker({transporter: new Transporter()})
+    await broker.start()
+
+    const results = []
+    broker.on('test.event', 'test-group', () => results.push('hello world'))
+    broker.on('test.event', 'test-group', () => results.push('hi world'))
+
+    const promises = _.range(100).map(() => broker.emit('test.event', 'yes'))
+    await Promise.all(promises)
+    expect(results.length).toBe(100)
+    expect(results.includes('hi world')).toBe(true)
+    expect(results.includes('hello world')).toBe(true)
   })
 
   test('define method before started', async () => {
