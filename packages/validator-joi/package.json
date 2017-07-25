@@ -1,6 +1,6 @@
 {
   "name": "micro-panda-validator-joi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -10,8 +10,8 @@
   "devDependencies": {
     "jest": "^20.0.4",
     "joi": "^10.6.0",
-    "micro-panda-broker": "^0.1.0",
-    "micro-panda-transporter-nats": "^0.1.0"
+    "micro-panda-broker": "^0.2.0",
+    "micro-panda-transporter-nats": "^0.2.0"
   },
   "peerDependencies": {
     "joi": "^10.6.0"

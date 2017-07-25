@@ -1,6 +1,6 @@
 {
   "name": "micro-panda-broker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -10,11 +10,11 @@
   "devDependencies": {
     "jest": "^20.0.4",
     "lodash": "^4.17.4",
-    "micro-panda-transporter-nats": "^0.1.0"
+    "micro-panda-transporter-nats": "^0.2.0"
   },
   "dependencies": {
     "error-utils": "^2.0.0",
-    "micro-panda-protocol": "^0.1.0",
-    "micro-panda-serializer-ejson": "^0.1.0"
+    "micro-panda-protocol": "^0.2.0",
+    "micro-panda-serializer-ejson": "^0.1.1"
   }
 }
