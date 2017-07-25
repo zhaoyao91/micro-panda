@@ -46,7 +46,7 @@ class Protocol {
   }
 }
 
-Protocol.protocol = 'mmp.1'
+Protocol.protocol = 'mpp.1'
 
 module.exports = Protocol
 
