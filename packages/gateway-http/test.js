@@ -87,7 +87,7 @@ describe('HTTP Gateway', () => {
   test('allow func', async () => {
     broker = new Broker({transporter: new Transporter()})
     await broker.start()
-    service = buildService({broker, allow: (type, name) => name === 'test'})
+    service = buildService({broker, allow: (req) => req.url === '/call/test'})
     const url = await listen(service)
 
     broker.define('test', () => {})
@@ -99,16 +99,6 @@ describe('HTTP Gateway', () => {
 
     {
       const res = await fetch(`${url}/call/test.wrong`)
-      expect(res.status).toBe(403)
-    }
-
-    {
-      const res = await fetch(`${url}/emit/test`)
-      expect(res.status).toBe(201)
-    }
-
-    {
-      const res = await fetch(`${url}/emit/test.wrong`)
       expect(res.status).toBe(403)
     }
   })

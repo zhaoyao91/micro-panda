@@ -1,6 +1,6 @@
 # HTTP Gateway
 
-Provide a http gateway for micro panda services.
+Simple http gateway for micro panda services.
 
 ## API
 
@@ -9,7 +9,9 @@ Provide a http gateway for micro panda services.
 params
 
 - broker
-- [allow] - func(type, name) => result - decide if the message is allowed to be sent 
+- [allow] - func(req) => result - check if this http request is allowed
+  - req - [node.js http incomingmessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
+  - result - boolean - if false, return 403
 - [prefix] - default to ''
 - [logger] - default to logger
 

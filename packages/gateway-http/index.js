@@ -3,13 +3,14 @@ const {send, text} = require('micro')
 const URL = require('url')
 
 module.exports = ({broker, allow = () => true, prefix = '', logger = console}) => micro(async (req, res) => {
+  if (!allow(req)) {
+    return send(res, 403, 'forbidden')
+  }
+
   const result = matchUrl(req.url, {prefix})
   if (!result) return send(res, 404, 'not found')
 
   const {type, name} = result
-  if (!allow(type, name)) {
-    return send(res, 403, 'forbidden')
-  }
 
   let input
   try {
