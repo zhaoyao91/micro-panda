@@ -27,6 +27,7 @@ module.exports = ({broker, allow = () => true, prefix = '', logger = console}) =
     switch (type) {
       case 'call': {
         const output = await broker.call(name, input)
+        res.setHeader('Content-Type', 'application/json')
         return send(res, 200, JSON.stringify(output))
       }
       case 'emit': {
