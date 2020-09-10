@@ -11,7 +11,7 @@
     "jest": "^20.0.4",
     "micro-panda-broker": "^0.2.0",
     "micro-panda-transporter-nats": "^0.2.0",
-    "node-fetch": "^1.7.1",
+    "node-fetch": "^2.6.1",
     "test-listen": "^1.0.2"
   },
   "dependencies": {
